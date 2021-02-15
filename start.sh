@@ -11,7 +11,7 @@ USAGE:
    [-1 "name of first cluster, default is remote1"] 
    [-2 "name of second cluster, default is remote2"]
 
-Example: $PROGNAME -n kuma-system -1 gcp-us-east-1 -2 eks-europe-central-1
+Example: $PROGNAME -1 gcp-us-east-1 -2 eks-europe-central-1
 
 EOF
   exit 1
@@ -37,7 +37,7 @@ echo "Zone 1: $first"
 echo "Zone 2: $second"
 
 echo "Starting global cluster"
-k3d cluster create KongMeshGlobal --k3s-server-arg '--no-deploy=traefik' -p '6681:31681@agent[0]' -p '6685:31685@agent[0]' --agents 1
+k3d cluster create KongMeshGlobal --k3s-server-arg '--no-deploy=traefik' -p '5681:31681@agent[0]' -p '5685:31685@agent[0]' --agents 1
 kumactl install control-plane --mode=global | kubectl apply -f -
 kubectl apply -f global-control-plane-nodeport-services.yaml -n $namespace
 
@@ -47,7 +47,7 @@ kumactl install control-plane \
   --mode=remote \
   --zone=$first \
   --ingress-enabled \
-  --kds-global-address grpcs://host.k3d.internal:6685 | kubectl apply -f -
+  --kds-global-address grpcs://host.k3d.internal:5685 | kubectl apply -f -
 kumactl install dns | kubectl apply -f -
 
 echo "Starting second remote cluster"
@@ -56,10 +56,10 @@ kumactl install control-plane \
   --mode=remote \
   --zone=$second \
   --ingress-enabled \
-  --kds-global-address grpcs://host.k3d.internal:6685 | kubectl apply -f -
+  --kds-global-address grpcs://host.k3d.internal:5685 | kubectl apply -f -
 kumactl install dns | kubectl apply -f -
 
-kumactl config control-planes add --name k3d-zones --address http://localhost:6681 --overwrite
+kumactl config control-planes add --name k3d-zones --address http://localhost:5681 --overwrite
 kubectl config use-context k3d-KongMeshRemote1
 
 echo ""
@@ -67,8 +67,8 @@ echo "*********************************************"
 echo "Kuma settings"
 echo ""
 echo "kumactl has been configured with a new zone called k3d-zones and has been switched to use it"
-echo "Kuma API is available at http://localhost:6681"
-echo "Kuma GUI is available at http://localhost:6681/gui"
+echo "Kuma API is available at http://localhost:5681"
+echo "Kuma GUI is available at http://localhost:5681/gui"
 echo ""
 echo "*********************************************"
 echo "Kubernetes / kubectl"
