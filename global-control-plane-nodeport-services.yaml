@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: global-api
+spec:
+  type: NodePort
+  ports:
+  - name: global-api
+    port: 5681
+    targetPort: 5681
+    nodePort: 31681
+    protocol: TCP
+  selector:
+    app: kuma-control-plane
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: global-grpcs
+spec:
+  type: NodePort
+  ports:
+  - name: global-grpcs
+    port: 5685
+    targetPort: 5685
+    nodePort: 31685
+    protocol: TCP
+  selector:
+    app: kuma-control-plane
+---
+
